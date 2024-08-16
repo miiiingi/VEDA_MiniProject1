@@ -1,9 +1,10 @@
-#ifndef CUSTOMER_MANAGER_H
-#define CUSTOMER_MANAGER_H
+#ifndef ITEM_MANAGER_H 
+#define ITEM_MANAGER_H
 
 #include <unordered_map>
 #include <string>
 #include <sqlite3.h>
+#include "Item.h"
 
 class Item;
 
@@ -19,7 +20,7 @@ public:
     bool deleteItem(const std::string &barcode);
 
 private:
-    std::unordered_map<std::string, std::unique_ptr<Item>> ItemMap;
+    std::unordered_map<std::string, std::unique_ptr<Item> > ItemMap;
 
     sqlite3 *db;
 

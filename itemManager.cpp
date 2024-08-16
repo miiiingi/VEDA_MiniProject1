@@ -1,6 +1,7 @@
 #include "ItemManager.h"
 #include "Item.h"
 #include <iostream>
+#include <memory>
 
 ItemManager::ItemManager()
 {

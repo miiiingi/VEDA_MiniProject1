@@ -1,5 +1,5 @@
-#ifndef CUSTOMER_H
-#define CUSTOMER_H
+#ifndef ITEM_H
+#define ITEM_H
 #include <string>
 
 class Item
