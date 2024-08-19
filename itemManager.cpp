@@ -1,5 +1,5 @@
-#include "ItemManager.h"
-#include "Item.h"
+#include "itemManager.h"
+#include "item.h"
 #include <iostream>
 #include <memory>
 
