@@ -145,7 +145,15 @@ void MainMenu::handleItemMenuChoice(int choice)
     case 1:
         cout << "Type barcode and manufacturer >> ";
         cin >> barcode >> manufacturer;
-        itemManager.addItem(barcode, manufacturer);
+        if (itemManager.addItem(barcode, manufacturer))
+        {
+            cout << "Added Barcode: " << barcode;
+        }
+        else
+        {
+            cout << "Item not found. Returning to Item Menu..." << endl;
+            showItemMenu(); // 메뉴를 다시 출력
+        }
         break;
     case 2:
         cout << "Type barcode >> ";
