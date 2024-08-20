@@ -139,7 +139,7 @@ void MainMenu::handleItemMenuChoice(int choice)
 {
     string barcode, manufacturer;
     ItemManager itemManager;
-    Item* item;
+    Item *item;
     switch (choice)
     {
     case 1:
@@ -151,20 +151,42 @@ void MainMenu::handleItemMenuChoice(int choice)
         cout << "Type barcode >> ";
         cin >> barcode;
         item = itemManager.getItem(barcode);
-        cout << "Barcode: " << item->getbarcodeNumber() << endl;
-        cout << "Manufacturer: " << item->getItemManufacturer();
+        if (item)
+        {
+            cout << "Barcode: " << item->getbarcodeNumber() << endl;
+            cout << "Manufacturer: " << item->getItemManufacturer();
+        }
+        else
+        {
+            cout << "Item not found. Returning to Item Menu..." << endl;
+            showItemMenu(); // 메뉴를 다시 출력
+        }
         break;
     case 3:
         cout << "Type barcode and manufacturer >> ";
         cin >> barcode >> manufacturer;
-        itemManager.updateItem(barcode, manufacturer);
-        cout << "Updated Barcode: " << barcode;
+        if (itemManager.updateItem(barcode, manufacturer))
+        {
+            cout << "Updated Barcode: " << barcode;
+        }
+        else
+        {
+            cout << "Item not found. Returning to Item Menu..." << endl;
+            showItemMenu(); // 메뉴를 다시 출력
+        }
         break;
     case 4:
         cout << "Type barcode >> ";
         cin >> barcode;
-        itemManager.deleteItem(barcode);
-        cout << "Deleted Barcode: " << barcode;
+        if (itemManager.deleteItem(barcode))
+        {
+            cout << "Deleted Barcode: " << barcode;
+        }
+        else
+        {
+            cout << "Item not found. Returning to Item Menu..." << endl;
+            showItemMenu(); // 메뉴를 다시 출력
+        }
         break;
     case 5:
         break;
