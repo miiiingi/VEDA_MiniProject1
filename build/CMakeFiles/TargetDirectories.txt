@@ -1,0 +1,3 @@
+/Users/junyoung/Proj1/teamSpace/VEDA_MiniProject1/build/CMakeFiles/VEDA_MiniProject1.dir
+/Users/junyoung/Proj1/teamSpace/VEDA_MiniProject1/build/CMakeFiles/edit_cache.dir
+/Users/junyoung/Proj1/teamSpace/VEDA_MiniProject1/build/CMakeFiles/rebuild_cache.dir
