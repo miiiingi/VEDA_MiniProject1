@@ -2,6 +2,9 @@
 #include "item.h"
 #include <iostream>
 #include <memory>
+#include <unordered_map>
+#include <string>
+#include <sqlite3.h>
 
 ItemManager::ItemManager()
 {
