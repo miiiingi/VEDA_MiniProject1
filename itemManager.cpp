@@ -103,8 +103,10 @@ bool ItemManager::updateItem(const std::string &barcode, const std::string &newM
 
 bool ItemManager::deleteItem(const std::string &barcode)
 {
-    if (ItemMap.erase(barcode) > 0)
+    Item *item = findItemByBarcode(barcode);
+    if (item)
     {
+        std::cout << "Item found in map and erased." << std::endl;
         deleteItemFromDatabase(barcode);
         return true;
     }
