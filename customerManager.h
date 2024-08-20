@@ -1,3 +1,4 @@
+
 #ifndef CUSTOMER_MANAGER_H
 #define CUSTOMER_MANAGER_H
 
@@ -7,9 +8,7 @@
 #include <string>
 #include <memory>
 
-//using namespace std;
 
-//사용자 지정 클래스에 대해 전방참조 테크닉을 쓸 수 있었군요 !
 class Customer;
 
 class CustomerManager{
@@ -18,19 +17,15 @@ public:
     CustomerManager();
 
 
-    void printCustomer();
-    void insertCustomer();
+    void insertCustomer(unsigned int,const std::string&, const std::string&);
     int isEmpty();
-    
 
-    //void showCustomerInfo(Customer*);
-    //
-
+    //using 'auto' to get a return from this function can be useful. 
+    std::unique_ptr<Customer>& searchCustomer(const std::string&);
 
 private:
     std::unordered_map<std::string,std::unique_ptr<Customer>> CustomerMap;
     unsigned int customerNumber;
-
 
 
 };
