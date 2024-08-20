@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include <string>
 #include <sqlite3.h>
-#include "item.h"
 
 class Item;
 
@@ -20,7 +19,7 @@ public:
     bool deleteItem(const std::string &barcode);
 
 private:
-    std::unordered_map<std::string, std::unique_ptr<Item> > ItemMap;
+    std::unordered_map<std::string, std::unique_ptr<Item>> ItemMap;
 
     sqlite3 *db;
 
