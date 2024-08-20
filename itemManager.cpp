@@ -6,6 +6,8 @@
 #include <string>
 #include <sqlite3.h>
 
+using namespace std;
+
 ItemManager::ItemManager()
 {
     connectToDatabase();
@@ -24,7 +26,7 @@ void ItemManager::connectToDatabase()
     int rc = sqlite3_open("itemdb.sqlite", &db);
     if (rc)
     {
-        std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+        cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
         return;
     }
 
@@ -38,16 +40,17 @@ void ItemManager::connectToDatabase()
     rc = sqlite3_exec(db, sqlCreateTable, 0, 0, &errMsg);
     if (rc != SQLITE_OK)
     {
-        std::cerr << "SQL error: " << errMsg << std::endl;
+        cerr << "SQL error: " << errMsg << std::endl;
         sqlite3_free(errMsg);
     }
 }
 
-bool ItemManager::addItem(const std::string &barcode, const std::string &manufacturer)
+bool ItemManager::addItem(const string &barcode, const std::string &manufacturer)
 {
-    if (ItemMap.find(barcode) != ItemMap.end())
+    Item *item = findItemByBarcode(barcode);
+    if (item)
     {
-        return false; // 이미 존재하는 바코드 번호
+        return false;
     }
 
     const char *sqlInsert = "INSERT INTO Item (barcode, manufacturer) VALUES (?, ?);";
@@ -59,7 +62,7 @@ bool ItemManager::addItem(const std::string &barcode, const std::string &manufac
     int rc = sqlite3_step(stmt);
     if (rc != SQLITE_DONE)
     {
-        std::cerr << "SQL error: Failed to insert item." << std::endl;
+        cerr << "SQL error: Failed to insert item." << std::endl;
         sqlite3_finalize(stmt);
         return false;
     }
@@ -70,17 +73,17 @@ bool ItemManager::addItem(const std::string &barcode, const std::string &manufac
     unsigned int newId = sqlite3_last_insert_rowid(db);
 
     // ItemMap에 추가합니다.
-    ItemMap[barcode] = std::make_unique<Item>(newId, barcode, manufacturer);
+    ItemMap[barcode] = make_unique<Item>(newId, barcode, manufacturer);
 
     return true;
 }
 
-Item *ItemManager::getItem(const std::string &barcode)
+Item *ItemManager::getItem(const string &barcode)
 {
     return findItemByBarcode(barcode);
 }
 
-bool ItemManager::updateItem(const std::string &barcode, const std::string &newManufacturer)
+bool ItemManager::updateItem(const string &barcode, const std::string &newManufacturer)
 {
     Item *item = findItemByBarcode(barcode);
     if (item)
@@ -101,12 +104,12 @@ bool ItemManager::updateItem(const std::string &barcode, const std::string &newM
     return false;
 }
 
-bool ItemManager::deleteItem(const std::string &barcode)
+bool ItemManager::deleteItem(const string &barcode)
 {
     Item *item = findItemByBarcode(barcode);
     if (item)
     {
-        std::cout << "Item found in map and erased." << std::endl;
+        cout << "Item found in map and erased." << std::endl;
         deleteItemFromDatabase(barcode);
         return true;
     }
@@ -126,7 +129,7 @@ void ItemManager::saveItemToDatabase(const Item &item)
     sqlite3_finalize(stmt);
 }
 
-void ItemManager::deleteItemFromDatabase(const std::string &barcode)
+void ItemManager::deleteItemFromDatabase(const string &barcode)
 {
     const char *sqlDelete = "DELETE FROM Item WHERE barcode = ?;";
     sqlite3_stmt *stmt;
@@ -137,7 +140,7 @@ void ItemManager::deleteItemFromDatabase(const std::string &barcode)
     sqlite3_finalize(stmt);
 }
 
-Item *ItemManager::findItemByBarcode(const std::string &barcode)
+Item *ItemManager::findItemByBarcode(const string &barcode)
 {
     auto it = ItemMap.find(barcode);
     if (it != ItemMap.end())
@@ -153,8 +156,8 @@ Item *ItemManager::findItemByBarcode(const std::string &barcode)
     if (sqlite3_step(stmt) == SQLITE_ROW)
     {
         unsigned int id = sqlite3_column_int(stmt, 0);
-        std::string manufacturer = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
-        ItemMap[barcode] = std::make_unique<Item>(id, barcode, manufacturer);
+        string manufacturer = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+        ItemMap[barcode] = make_unique<Item>(id, barcode, manufacturer);
         sqlite3_finalize(stmt);
         return ItemMap[barcode].get();
     }
