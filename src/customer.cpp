@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Customer::Customer(unsigned int p_id, const string& p_name,const string& p_phone):customerId(p_id),customerName(p_name),customerPhoneNumber(p_phone){
+Customer::Customer(unsigned int p_id, const string& p_name,const string& p_phone, unsigned int p_point):customerId(p_id),customerName(p_name),customerPhoneNumber(p_phone), customerPoint(p_point){
     cout<<"Customer "<<customerPhoneNumber<<" added to the list\n";
 
 
@@ -36,3 +36,12 @@ void Customer::setCustomerPhoneNumber(const string& p_phone){
 const string& Customer::getCustomerPhoneNumber()const{
     return customerPhoneNumber;
 }
+
+void Customer::setCustomerPoint(unsigned int p_point){
+    customerPoint = p_point;
+}
+
+unsigned int Customer::getCustomerPoint() const{
+    return customerPoint;
+}
+

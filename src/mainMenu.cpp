@@ -58,8 +58,8 @@ void MainMenu::showCustomerMenu()
         cout << "\n=== Customer Menu ===" << endl;
         cout << "1. Insert Customer" << endl;
         cout << "2. Search Customer" << endl;
-        cout << "3. Modify Customer (T.B.D)" << endl;
-        cout << "4. Delete Customer (T.B.D)" << endl;
+        cout << "3. Modify Customer" << endl;
+        cout << "4. Delete Customer" << endl;
         cout << "5. Back to Main Menu" << endl;
         cout << "Enter your choice >> ";
         cin >> choice;
@@ -73,13 +73,13 @@ void MainMenu::handleCustomerMenuChoice(int choice)
     {
     case 1:
     { // 1. Insert Costomer
-        unsigned int id;
+        unsigned int id, point;
         string name, phone;
 
-        cout << "Insert ID, NAME, PHONE NUMBER >> " << endl;
-        cin >> id >> name >> phone;
+        cout << "Insert ID, NAME, PHONE NUMBER, POINT >> " << endl;
+        cin >> id >> name >> phone>>point;
 
-        customerManager.insertCustomer(id, name, phone);
+        customerManager.insertCustomer(id, name, phone, point);
         cout << "Successfully added customer information" << endl;
         break;
     }
@@ -97,6 +97,7 @@ void MainMenu::handleCustomerMenuChoice(int choice)
             cout << "ID: " << customer->getCustomerId() << endl;
             cout << "Name: " << customer->getCustomerName() << endl;
             cout << "Phone: " << customer->getCustomerPhoneNumber() << endl;
+	    cout << "Point : " << customer->getCustomerPoint() << endl;
         }
         else
         {
@@ -105,11 +106,53 @@ void MainMenu::handleCustomerMenuChoice(int choice)
         break;
     }
     case 3:
-        cout << "Modify Customer (T.B.D)..." << endl;
+    {
+        string phone;
+        cout << "Enter customer phone number to modify >> " << endl;
+        cin >> phone;
+
+        unique_ptr<Customer> &customer = customerManager.searchCustomer(phone);
+
+        unsigned int point;
+	//n_phone 은 검색 key phone 과 구분되는, 새 phone 입니다.
+        string name,n_phone;
+
+
+        cout << "Insert new NAME, PHONE NUMBER, POINT >> " << endl;
+        cin >> name >> n_phone>>point;
+
+
+        if (customer)
+        {
+	    cout << "Customer Update Successful" << endl;
+	    customerManager.updateCustomer(phone,name,n_phone,point);
+        }
+        else
+        {
+            cout << "Customer not found ..." << endl;
+        }
         break;
+    }
     case 4:
-        cout << "Delete Customer (T.B.D)..." << endl;
+    {	
+        string phone;
+        cout << "Enter customer phone number to delete >> " << endl;
+        cin >> phone;
+
+        unique_ptr<Customer> &customer = customerManager.searchCustomer(phone);
+
+        if (customer)
+        {
+            cout << "Customer Successfully deleted" << endl;
+
+	    customerManager.deleteCustomer(phone);
+        }
+        else
+        {
+            cout << "Customer not found ..." << endl;
+        }
         break;
+    }
     case 5:
         break;
     default:
