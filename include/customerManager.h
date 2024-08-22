@@ -3,7 +3,7 @@
 #define CUSTOMER_MANAGER_H
 
 
-//?꾨옒 ???ㅻ뜑???꾨? 吏곸젒 ?좎뼵????二쇱뼱???댁꽌..??
+//아래 세 헤더는 전부 직접 선언을 해 주어야 해서..네
 #include <unordered_map>
 #include <string>
 #include <memory>

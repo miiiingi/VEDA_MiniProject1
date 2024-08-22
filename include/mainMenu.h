@@ -1,7 +1,7 @@
 #ifndef MAINMENU_H
 #define MAINMENU_H
 
-#include "customerManager.h" 
+#include "customerManager.h"  // CustomerManager
 
 class MainMenu {
 public:
@@ -9,19 +9,13 @@ public:
 
 private:
     void showMainMenu();
-    void showCustomerMenu();
-    void showManagerMenu();
-    void showItemManagementMenu(); 
-    void showCustomerManagementMenu(); 
-    bool loginCustomer(); 
     void handleMainMenuChoice(int choice);
+    void showCustomerMenu();
+    void showItemMenu();
     void handleCustomerMenuChoice(int choice);
-    void handleManagerMenuChoice(int choice);
-    void handleCustomerManagementMenuChoice(int choice);
-    void handleItemManagementMenu(int choice);
+    void handleItemMenuChoice(int choice);
 
-    CustomerManager customerManager; 
-    Customer* currentCustomer = nullptr; 
+    CustomerManager customerManager; // Customer Manager
 };
 
 #endif // MAINMENU_H
