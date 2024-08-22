@@ -5,6 +5,9 @@
 #include <string>
 #include <sqlite3.h>
 
+#include <memory>           // For std::unique_ptr
+#include <unordered_map>   // For std::unordered_map
+
 class Item;
 
 class ItemManager

@@ -2,8 +2,8 @@
 #define CUSTOMER_H
 
 
-//전방참조 테크닉을 써 볼까요?
-//실패..컴파일이 안됩니다. 뭔가 ambiguous 하다는데 잘 몰겟네요.
+//?꾨갑李몄“ ?뚰겕?됱쓣 ??蹂쇨퉴??
+//?ㅽ뙣..而댄뙆?쇱씠 ?덈맗?덈떎. 萸붽? ambiguous ?섎떎?붾뜲 ??紐곌쿊?ㅼ슂.
 //class string;
 #include<string>
 
@@ -13,7 +13,7 @@ class Customer{
 
 
 public:
-    Customer(unsigned int,const std::string&,const std::string&);
+    Customer(unsigned int,const std::string&,const std::string&, unsigned int);
 
     void setCustomerId(const unsigned int);
     unsigned int getCustomerId() const;
@@ -24,15 +24,16 @@ public:
     void setCustomerPhoneNumber(const std::string&);
     const std::string&  getCustomerPhoneNumber() const;
 
-
+    void setCustomerPoint(const unsigned int);
+    unsigned int getCustomerPoint() const;
 
 private:
     unsigned int customerId;
     std::string customerName;
     std::string customerPhoneNumber;
-
-    //구매내역은 어떻게 구성하면 좋을지 아이디어 필요
-    //아이템 세일즈정보와 / 세부정보를 분리했다고 하자.
+    unsigned int customerPoint;
+    //援щℓ?댁뿭? ?대뼸寃?援ъ꽦?섎㈃ 醫뗭쓣吏 ?꾩씠?붿뼱 ?꾩슂
+    //?꾩씠???몄씪利덉젙蹂댁? / ?몃??뺣낫瑜?遺꾨━?덈떎怨??섏옄.
 
 };
 
