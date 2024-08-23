@@ -10,10 +10,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 if(WIN32)
     set(SQLite3_INCLUDE_DIR "C:/Users/snd03/Desktop/VEDA/02. VEDA_Class/02. 2week_C++/04. PATH")
     set(SQLite3_LIBRARY "C:/Users/snd03/Desktop/VEDA/02. VEDA_Class/02. 2week_C++/04. PATH/sqlite3.lib")
+else()
+    # Unix-like 시스템 (Linux, macOS 등)
+    find_package(SQLite3 REQUIRED)
+    set(SQLite3_INCLUDE_DIR ${SQLite3_INCLUDE_DIRS})
+    set(SQLite3_LIBRARY ${SQLite3_LIBRARIES})
 endif()
 
 # 헤더파일들이 들어갈 디렉토리 지정
-include_directories(${SQLite3_INCLUDE_DIR})
 include_directories(include)  # 헤더 파일이 위치한 디렉토리
 
 # 소스파일들 나열
