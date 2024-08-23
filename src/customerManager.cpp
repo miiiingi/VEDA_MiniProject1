@@ -65,7 +65,7 @@ unique_ptr<Customer>& CustomerManager::searchCustomer(const string& p_phone){
             std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
             std::string phone = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
             unsigned int point = sqlite3_column_int(stmt, 3);  // 'point' 값 추가
-            CustomerMap[phone] = std::make_unique<Customer>(id, name, phone, point);  // 'point' 값 추가
+            CustomerMap[phone] = std::make_unique<Customer>(name, phone, point);  // 'point' 값 추가
         }
 
         sqlite3_finalize(stmt);

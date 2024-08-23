@@ -165,13 +165,12 @@ void MainMenu::handleCustomerManagementMenuChoice(int choice)
     {
         case 1:
             { // 1. Insert Costomer
-                unsigned int id, point;
                 string name, phone;
 
-                cout << "Insert ID, NAME, PHONE NUMBER, POINT >> " << endl;
-                cin >> id >> name >> phone>>point;
+                cout << "Insert NAME, PHONE NUMBER >> " << endl;
+                cin >> name >> phone ;
 
-                customerManager.insertCustomer(id, name, phone, point);
+                customerManager.insertCustomer(name, phone);
                 cout << "Successfully added customer information" << endl;
                 break;
             }
@@ -186,7 +185,7 @@ void MainMenu::handleCustomerManagementMenuChoice(int choice)
                 if (customer)
                 {
                     cout << "Customer Found" << endl;
-                    cout << "ID: " << customer->getCustomerId() << endl;
+                    //cout << "ID: " << customer->getCustomerId() << endl;
                     cout << "Name: " << customer->getCustomerName() << endl;
                     cout << "Phone: " << customer->getCustomerPhoneNumber() << endl;
                 cout << "Point : " << customer->getCustomerPoint() << endl;

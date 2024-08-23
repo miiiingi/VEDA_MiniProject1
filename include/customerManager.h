@@ -17,7 +17,7 @@ public:
     CustomerManager();
     ~CustomerManager();
 
-    void insertCustomer(const std::string&, const std::string&, const unsigned int);
+    void insertCustomer(const std::string&, const std::string&);
     int isEmpty();
 
     //using 'auto' to get a return from this function can be useful. 
