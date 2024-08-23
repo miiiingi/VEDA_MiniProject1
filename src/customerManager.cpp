@@ -20,7 +20,7 @@ CustomerManager::CustomerManager() : customerNumber(0), db(nullptr) {
         "id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "name TEXT NOT NULL, "
         "phone TEXT UNIQUE NOT NULL, "
-        "point INTEGER DEFAULT 0);";  // 'point' 열 추가
+        "point INTEGER DEFAULT 0);";  // point' 열 추가
 
     // 테이블 생성 실행
     char *errMsg = nullptr;
@@ -35,17 +35,15 @@ int CustomerManager::isEmpty(){
     return customerNumber == 0;
 }
 
-void CustomerManager::insertCustomer(unsigned int p_id, const string& p_name, const string& p_phone, unsigned int p_point) {
-    const char* sqlInsert = "INSERT INTO Customer (id, name, phone, point) VALUES (?, ?, ?, ?);";
+void CustomerManager::insertCustomer(const string& p_name, const string& p_phone) {
+    const char* sqlInsert = "INSERT INTO Customer (name, phone) VALUES (?, ?);";
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db, sqlInsert, -1, &stmt, 0);
-    sqlite3_bind_int(stmt, 1, p_id);
-    sqlite3_bind_text(stmt, 2, p_name.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 3, p_phone.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_int(stmt, 4, p_point);  // 'point' 값 추가
+    sqlite3_bind_text(stmt, 1, p_name.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, p_phone.c_str(), -1, SQLITE_STATIC);
 
     if (sqlite3_step(stmt) == SQLITE_DONE) {
-        CustomerMap[p_phone] = std::make_unique<Customer>(p_id, p_name, p_phone, p_point); // 'point' 값 추가
+        CustomerMap[p_phone] = std::make_unique<Customer>(p_name, p_phone,0); // 'point' 값 추가
         customerNumber++;
     } else {
         std::cerr << "Failed to insert customer: " << sqlite3_errmsg(db) << std::endl;
