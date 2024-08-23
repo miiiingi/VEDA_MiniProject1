@@ -14,15 +14,15 @@ CustomerManager::CustomerManager() : customerNumber(0), db(nullptr) {
         return;
     }
 
-    // ?뚯씠釉??앹꽦 SQL 荑쇰━
+    // 테이블 생성 SQL 쿼리
     const char *sqlCreateTable =
         "CREATE TABLE IF NOT EXISTS Customer ("
         "id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "name TEXT NOT NULL, "
         "phone TEXT UNIQUE NOT NULL, "
-        "point INTEGER DEFAULT 0);";  // 'point' ??異붽?
+        "point INTEGER DEFAULT 0);";  // 'point' 열 추가
 
-    // ?뚯씠釉??앹꽦 ?ㅽ뻾
+    // 테이블 생성 실행
     char *errMsg = nullptr;
     rc = sqlite3_exec(db, sqlCreateTable, 0, 0, &errMsg);
     if (rc != SQLITE_OK) {
@@ -42,10 +42,10 @@ void CustomerManager::insertCustomer(unsigned int p_id, const string& p_name, co
     sqlite3_bind_int(stmt, 1, p_id);
     sqlite3_bind_text(stmt, 2, p_name.c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 3, p_phone.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_int(stmt, 4, p_point);  // 'point' 媛?異붽?
+    sqlite3_bind_int(stmt, 4, p_point);  // 'point' 값 추가
 
     if (sqlite3_step(stmt) == SQLITE_DONE) {
-        CustomerMap[p_phone] = std::make_unique<Customer>(p_id, p_name, p_phone, p_point); // 'point' 媛?異붽?
+        CustomerMap[p_phone] = std::make_unique<Customer>(p_id, p_name, p_phone, p_point); // 'point' 값 추가
         customerNumber++;
     } else {
         std::cerr << "Failed to insert customer: " << sqlite3_errmsg(db) << std::endl;
@@ -57,7 +57,7 @@ void CustomerManager::insertCustomer(unsigned int p_id, const string& p_name, co
 unique_ptr<Customer>& CustomerManager::searchCustomer(const string& p_phone){
     auto it = CustomerMap.find(p_phone);
     if (it == CustomerMap.end()) {
-        const char* sqlSelect = "SELECT id, name, phone, point FROM Customer WHERE phone = ?;";  // 'point' 異붽?
+        const char* sqlSelect = "SELECT id, name, phone, point FROM Customer WHERE phone = ?;";  // 'point' 추가
         sqlite3_stmt* stmt;
         sqlite3_prepare_v2(db, sqlSelect, -1, &stmt, 0);
         sqlite3_bind_text(stmt, 1, p_phone.c_str(), -1, SQLITE_STATIC);
@@ -66,8 +66,8 @@ unique_ptr<Customer>& CustomerManager::searchCustomer(const string& p_phone){
             unsigned int id = sqlite3_column_int(stmt, 0);
             std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
             std::string phone = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-            unsigned int point = sqlite3_column_int(stmt, 3);  // 'point' 媛?異붽?
-            CustomerMap[phone] = std::make_unique<Customer>(id, name, phone, point);  // 'point' 媛?異붽?
+            unsigned int point = sqlite3_column_int(stmt, 3);  // 'point' 값 추가
+            CustomerMap[phone] = std::make_unique<Customer>(id, name, phone, point);  // 'point' 값 추가
         }
 
         sqlite3_finalize(stmt);
@@ -81,7 +81,7 @@ void CustomerManager::updateCustomer(const std::string& p_phone, const std::stri
     sqlite3_prepare_v2(db, sqlUpdate, -1, &stmt, 0);
     sqlite3_bind_text(stmt, 1, new_name.c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 2, new_phone.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_int(stmt, 3, new_point);  // 'point' 媛?異붽?
+    sqlite3_bind_int(stmt, 3, new_point);  // 'point' 값 추가
     sqlite3_bind_text(stmt, 4, p_phone.c_str(), -1, SQLITE_STATIC);
 
     if (sqlite3_step(stmt) == SQLITE_DONE) {
@@ -89,8 +89,8 @@ void CustomerManager::updateCustomer(const std::string& p_phone, const std::stri
         if (it != CustomerMap.end()) {
             it->second->setCustomerName(new_name);
             it->second->setCustomerPhoneNumber(new_phone);
-            it->second->setCustomerPoint(new_point);  // 'point' 媛??낅뜲?댄듃
-            CustomerMap[new_phone] = std::move(it->second); // ?댁쟾 ?곗씠?곕? ??젣 諛??덈줈 ?앹꽦
+            it->second->setCustomerPoint(new_point);  // 'point' 값 업데이트
+            CustomerMap[new_phone] = std::move(it->second); // 이전 데이터를 삭제 및 새로 생성
             CustomerMap.erase(it);
         }
     } else {
@@ -105,7 +105,6 @@ void CustomerManager::deleteCustomer(const std::string& p_phone) {
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db, sqlDelete, -1, &stmt, 0);
     sqlite3_bind_text(stmt, 1, p_phone.c_str(), -1, SQLITE_STATIC);
-
     if (sqlite3_step(stmt) == SQLITE_DONE) {
         CustomerMap.erase(p_phone);
         customerNumber--;

@@ -156,7 +156,7 @@ void MainMenu::showCustomerManagementMenu()
         cout << "Enter your choice >> ";
         cin >> choice;
         handleCustomerManagementMenuChoice(choice);
-    } while (choice != 5); // 5. Back to Manager Menu ╪╠ец ╫ц а╬╥А
+    } while (choice != 5); // 5. Back to Manager Menu О©╫О©╫О©╫О©╫ О©╫О©╫ О©╫О©╫О©╫О©╫
 }
 
 void MainMenu::handleCustomerManagementMenuChoice(int choice)

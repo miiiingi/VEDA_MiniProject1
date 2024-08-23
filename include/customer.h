@@ -1,10 +1,5 @@
 #ifndef CUSTOMER_H
 #define CUSTOMER_H
-
-
-//?꾨갑李몄“ ?뚰겕?됱쓣 ??蹂쇨퉴??
-//?ㅽ뙣..而댄뙆?쇱씠 ?덈맗?덈떎. 萸붽? ambiguous ?섎떎?붾뜲 ??紐곌쿊?ㅼ슂.
-//class string;
 #include<string>
 
 
@@ -32,8 +27,8 @@ private:
     std::string customerName;
     std::string customerPhoneNumber;
     unsigned int customerPoint;
-    //援щℓ?댁뿭? ?대뼸寃?援ъ꽦?섎㈃ 醫뗭쓣吏 ?꾩씠?붿뼱 ?꾩슂
-    //?꾩씠???몄씪利덉젙蹂댁? / ?몃??뺣낫瑜?遺꾨━?덈떎怨??섏옄.
+    //구매내역은 어떻게 구성하면 좋을지 아이디어 필요
+    //아이템 세일즈정보와 / 세부정보를 분리했다고 하자.
 
 };
 
