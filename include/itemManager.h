@@ -16,7 +16,7 @@ public:
     ItemManager();
     ~ItemManager();
 
-    bool addItem(const std::string &barcode, const std::string &manufacturer);
+    bool addItem(const std::string &barcode, const std::string &manufacturer, unsigned int price);
     Item *getItem(const std::string &barcode);
     void getAllItem();
     static int callback(void *NotUsed, int argc, char **argv, char **azColName);

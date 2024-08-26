@@ -271,13 +271,14 @@ void MainMenu::showItemManagementMenu()
 void MainMenu::handleItemManagementMenu(int choice)
 {
     string barcode, manufacturer;
+    unsigned int price;
     Item *item;
     switch (choice)
     {
     case 1:
-        cout << "Type barcode and manufacturer >> ";
-        cin >> barcode >> manufacturer;
-        if (ItemManager.addItem(barcode, manufacturer))
+        cout << "Type barcode, manufacturer, price >> ";
+        cin >> barcode >> manufacturer >> price;
+        if (ItemManager.addItem(barcode, manufacturer, price))
         {
             cout << "Added Barcode: " << barcode;
         }

@@ -33,6 +33,7 @@ void ItemManager::connectToDatabase()
     const char *sqlCreateTable =
         "CREATE TABLE IF NOT EXISTS Item ("
         "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "price INTEGER NOT NULL, "
         "barcode TEXT UNIQUE NOT NULL, "
         "manufacturer TEXT NOT NULL);";
 
@@ -45,19 +46,21 @@ void ItemManager::connectToDatabase()
     }
 }
 
-bool ItemManager::addItem(const string &barcode, const std::string &manufacturer)
+bool ItemManager::addItem(const string &barcode, const std::string &manufacturer, unsigned int price)
 {
     Item *item = findItemByBarcode(barcode);
+
     if (item)
     {
         return false;
     }
 
-    const char *sqlInsert = "INSERT INTO Item (barcode, manufacturer) VALUES (?, ?);";
+    const char *sqlInsert = "INSERT INTO Item (barcode, manufacturer, price) VALUES (?, ?, ?);";
     sqlite3_stmt *stmt;
     sqlite3_prepare_v2(db, sqlInsert, -1, &stmt, 0);
     sqlite3_bind_text(stmt, 1, barcode.c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 2, manufacturer.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 3, price);
 
     int rc = sqlite3_step(stmt);
     if (rc != SQLITE_DONE)
@@ -73,7 +76,7 @@ bool ItemManager::addItem(const string &barcode, const std::string &manufacturer
     unsigned int newId = sqlite3_last_insert_rowid(db);
 
     // ItemMap에 추가합니다.
-    ItemMap[barcode] = make_unique<Item>(newId, barcode, manufacturer);
+    ItemMap[barcode] = make_unique<Item>(newId, price, barcode, manufacturer);
 
     return true;
 }
@@ -138,12 +141,13 @@ bool ItemManager::deleteItem(const string &barcode)
 
 void ItemManager::saveItemToDatabase(const Item &item)
 {
-    const char *sqlInsert = "INSERT INTO Item (id, barcode, manufacturer) VALUES (?, ?, ?);";
+    const char *sqlInsert = "INSERT INTO Item (id, barcode, manufacturer, price) VALUES (?, ?, ?, ?);";
     sqlite3_stmt *stmt;
     sqlite3_prepare_v2(db, sqlInsert, -1, &stmt, 0);
     sqlite3_bind_int(stmt, 1, item.getItemId());
     sqlite3_bind_text(stmt, 2, item.getbarcodeNumber().c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 3, item.getItemManufacturer().c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 4, item.getItemPrice());
 
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
@@ -168,7 +172,7 @@ Item *ItemManager::findItemByBarcode(const string &barcode)
         return it->second.get();
     }
 
-    const char *sqlSelect = "SELECT id, manufacturer FROM Item WHERE barcode = ?;";
+    const char *sqlSelect = "SELECT id, price, manufacturer FROM Item WHERE barcode = ?;";
     sqlite3_stmt *stmt;
     sqlite3_prepare_v2(db, sqlSelect, -1, &stmt, 0);
     sqlite3_bind_text(stmt, 1, barcode.c_str(), -1, SQLITE_STATIC);
@@ -176,8 +180,10 @@ Item *ItemManager::findItemByBarcode(const string &barcode)
     if (sqlite3_step(stmt) == SQLITE_ROW)
     {
         unsigned int id = sqlite3_column_int(stmt, 0);
-        string manufacturer = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
-        ItemMap[barcode] = make_unique<Item>(id, barcode, manufacturer);
+        unsigned int price = sqlite3_column_int(stmt, 1);
+        string manufacturer = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
+
+        ItemMap[barcode] = make_unique<Item>(id, price, barcode, manufacturer);
         sqlite3_finalize(stmt);
         return ItemMap[barcode].get();
     }
