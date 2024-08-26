@@ -18,6 +18,8 @@ public:
 
     bool addItem(const std::string &barcode, const std::string &manufacturer);
     Item *getItem(const std::string &barcode);
+    void getAllItem();
+    static int callback(void *NotUsed, int argc, char **argv, char **azColName);
     bool updateItem(const std::string &barcode, const std::string &newManufacturer);
     bool deleteItem(const std::string &barcode);
 

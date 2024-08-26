@@ -2,6 +2,7 @@
 #define MAINMENU_H
 
 #include "customerManager.h" 
+#include "itemManager.h"
 
 class MainMenu {
 public:
@@ -22,6 +23,7 @@ private:
 
     CustomerManager customerManager; 
     Customer* currentCustomer = nullptr; 
+    ItemManager ItemManager;
 };
 
 #endif // MAINMENU_H

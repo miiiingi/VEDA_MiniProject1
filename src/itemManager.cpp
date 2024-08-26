@@ -83,6 +83,26 @@ Item *ItemManager::getItem(const string &barcode)
     return findItemByBarcode(barcode);
 }
 
+void ItemManager::getAllItem()
+{
+    // 이미 열린 데이터베이스 연결을 사용합니다.
+    const char *sql = "SELECT * FROM Item;";
+
+    // 콜백 함수 호출
+    char *zErrMsg = nullptr;
+    int rc = sqlite3_exec(db, sql, ItemManager::callback, nullptr, &zErrMsg);
+
+    if (rc != SQLITE_OK)
+    {
+        std::cerr << "SQL error: " << zErrMsg << std::endl;
+        sqlite3_free(zErrMsg);
+    }
+    else
+    {
+        std::cout << "All items retrieved successfully." << std::endl;
+    }
+}
+
 bool ItemManager::updateItem(const string &barcode, const std::string &newManufacturer)
 {
     Item *item = findItemByBarcode(barcode);
@@ -164,4 +184,13 @@ Item *ItemManager::findItemByBarcode(const string &barcode)
 
     sqlite3_finalize(stmt);
     return nullptr; // 해당 바코드의 상품이 없음
+}
+int ItemManager::callback(void *NotUsed, int argc, char **argv, char **azColName)
+{
+    for (int i = 0; i < argc; i++)
+    {
+        std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << "\t";
+    }
+    std::cout << std::endl;
+    return 0;
 }

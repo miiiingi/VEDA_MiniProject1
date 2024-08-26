@@ -15,7 +15,7 @@ void MainMenu::run()
         showMainMenu();
         cin >> choice;
         handleMainMenuChoice(choice);
-    } while (choice != 3); 
+    } while (choice != 3);
 }
 
 void MainMenu::showMainMenu()
@@ -32,7 +32,7 @@ void MainMenu::handleMainMenuChoice(int choice)
     switch (choice)
     {
     case 1:
-        if (loginCustomer()) 
+        if (loginCustomer())
         {
             showCustomerMenu();
         }
@@ -60,7 +60,7 @@ bool MainMenu::loginCustomer()
     if (customer)
     {
         cout << "Login successful. Welcome, " << customer->getCustomerName() << "!" << endl;
-        currentCustomer = customer.get(); 
+        currentCustomer = customer.get();
         return true;
     }
     else
@@ -83,7 +83,7 @@ void MainMenu::showCustomerMenu()
         cout << "Enter your choice >> ";
         cin >> choice;
         handleCustomerMenuChoice(choice);
-    } while (choice != 4); 
+    } while (choice != 4);
 }
 
 void MainMenu::handleCustomerMenuChoice(int choice)
@@ -91,7 +91,7 @@ void MainMenu::handleCustomerMenuChoice(int choice)
     switch (choice)
     {
     case 1:
-        cout << "Viewing items (T.B.D)..." << endl;
+        ItemManager.getAllItem();
         break;
     case 2:
         cout << "Purchasing items (T.B.D)..." << endl;
@@ -101,7 +101,7 @@ void MainMenu::handleCustomerMenuChoice(int choice)
         break;
     case 4:
         cout << "Logging out..." << endl;
-        currentCustomer = nullptr; 
+        currentCustomer = nullptr;
     default:
         cout << "Invalid choice. Please try again." << endl;
         break;
@@ -120,7 +120,7 @@ void MainMenu::showManagerMenu()
         cout << "Enter your choice >> ";
         cin >> choice;
         handleManagerMenuChoice(choice);
-    } while (choice != 3); 
+    } while (choice != 3);
 }
 
 void MainMenu::handleManagerMenuChoice(int choice)
@@ -128,10 +128,10 @@ void MainMenu::handleManagerMenuChoice(int choice)
     switch (choice)
     {
     case 1:
-        showCustomerManagementMenu(); 
+        showCustomerManagementMenu();
         break;
     case 2:
-        showItemManagementMenu(); 
+        showItemManagementMenu();
         break;
     case 3:
         cout << "Returning to Main Menu..." << endl;
@@ -163,93 +163,91 @@ void MainMenu::handleCustomerManagementMenuChoice(int choice)
 {
     switch (choice)
     {
-        case 1:
-            { // 1. Insert Costomer
-                string name, phone;
+    case 1:
+    { // 1. Insert Costomer
+        string name, phone;
 
-                cout << "Insert NAME, PHONE NUMBER >> " << endl;
-                cin >> name >> phone ;
+        cout << "Insert NAME, PHONE NUMBER >> " << endl;
+        cin >> name >> phone;
 
-                customerManager.insertCustomer(name, phone);
-                cout << "Successfully added customer information" << endl;
-                break;
-            }
-        case 2:
-            { // 2. Search Customer
-                string phone;
-                cout << "Enter customer phone number to search >> " << endl;
-                cin >> phone;
+        customerManager.insertCustomer(name, phone);
+        cout << "Successfully added customer information" << endl;
+        break;
+    }
+    case 2:
+    { // 2. Search Customer
+        string phone;
+        cout << "Enter customer phone number to search >> " << endl;
+        cin >> phone;
 
-                unique_ptr<Customer> &customer = customerManager.searchCustomer(phone);
+        unique_ptr<Customer> &customer = customerManager.searchCustomer(phone);
 
-                if (customer)
-                {
-                    cout << "Customer Found" << endl;
-                    //cout << "ID: " << customer->getCustomerId() << endl;
-                    cout << "Name: " << customer->getCustomerName() << endl;
-                    cout << "Phone: " << customer->getCustomerPhoneNumber() << endl;
-                cout << "Point : " << customer->getCustomerPoint() << endl;
-                }
-                else
-                {
-                    cout << "Customer not found ..." << endl;
-                }
-                break;
-            }
-        case 3:
-            {
-                string phone;
-                cout << "Enter customer phone number to modify >> " << endl;
-                cin >> phone;
+        if (customer)
+        {
+            cout << "Customer Found" << endl;
+            // cout << "ID: " << customer->getCustomerId() << endl;
+            cout << "Name: " << customer->getCustomerName() << endl;
+            cout << "Phone: " << customer->getCustomerPhoneNumber() << endl;
+            cout << "Point : " << customer->getCustomerPoint() << endl;
+        }
+        else
+        {
+            cout << "Customer not found ..." << endl;
+        }
+        break;
+    }
+    case 3:
+    {
+        string phone;
+        cout << "Enter customer phone number to modify >> " << endl;
+        cin >> phone;
 
-                unique_ptr<Customer> &customer = customerManager.searchCustomer(phone);
+        unique_ptr<Customer> &customer = customerManager.searchCustomer(phone);
 
-                unsigned int point;
+        unsigned int point;
 
-                string name,n_phone;
+        string name, n_phone;
 
+        cout << "Insert new NAME, PHONE NUMBER, POINT >> " << endl;
+        cin >> name >> n_phone >> point;
 
-                cout << "Insert new NAME, PHONE NUMBER, POINT >> " << endl;
-                cin >> name >> n_phone>>point;
+        if (customer)
+        {
+            cout << "Customer Update Successful" << endl;
+            customerManager.updateCustomer(phone, name, n_phone, point);
+        }
+        else
+        {
+            cout << "Customer not found ..." << endl;
+        }
+        break;
+    }
+    case 4:
+    {
+        string phone;
+        cout << "Enter customer phone number to delete >> " << endl;
+        cin >> phone;
 
+        unique_ptr<Customer> &customer = customerManager.searchCustomer(phone);
 
-                if (customer)
-                {
-                cout << "Customer Update Successful" << endl;
-                customerManager.updateCustomer(phone,name,n_phone,point);
-                }
-                else
-                {
-                    cout << "Customer not found ..." << endl;
-                }
-                break;
-            }
-        case 4:
-            {	
-                string phone;
-                cout << "Enter customer phone number to delete >> " << endl;
-                cin >> phone;
+        if (customer)
+        {
+            cout << "Customer Successfully deleted" << endl;
 
-                unique_ptr<Customer> &customer = customerManager.searchCustomer(phone);
-
-                if (customer)
-                {
-                    cout << "Customer Successfully deleted" << endl;
-
-                customerManager.deleteCustomer(phone);
-                }
-                else
-                {
-                    cout << "Customer not found ..." << endl;
-                }
-                break;
-            }
-        case 5:
-            cout << "Returning to Manager Menu..." << endl;
-            break;
-        default:
-            cout << "Invalid choice. Please try again." << endl;
-            break;
+            customerManager.deleteCustomer(phone);
+        }
+        else
+        {
+            cout << "Customer not found ..." << endl;
+        }
+        break;
+    }
+    case 5:
+        cout << "Returning to Manager Menu..." << endl;
+        break;
+    default:
+        cout << "Invalid choice. Please try again." << endl;
+        break;
     }
 }
 
@@ -273,27 +271,26 @@ void MainMenu::showItemManagementMenu()
 void MainMenu::handleItemManagementMenu(int choice)
 {
     string barcode, manufacturer;
-    ItemManager itemManager;
     Item *item;
     switch (choice)
     {
     case 1:
         cout << "Type barcode and manufacturer >> ";
         cin >> barcode >> manufacturer;
-        if (itemManager.addItem(barcode, manufacturer))
+        if (ItemManager.addItem(barcode, manufacturer))
         {
             cout << "Added Barcode: " << barcode;
         }
         else
         {
             cout << "Item not found. Returning to Item Menu..." << endl;
-            showItemManagementMenu(); 
+            showItemManagementMenu();
         }
         break;
     case 2:
         cout << "Type barcode >> ";
         cin >> barcode;
-        item = itemManager.getItem(barcode);
+        item = ItemManager.getItem(barcode);
         if (item)
         {
             cout << "Barcode: " << item->getbarcodeNumber() << endl;
@@ -302,33 +299,33 @@ void MainMenu::handleItemManagementMenu(int choice)
         else
         {
             cout << "Item not found. Returning to Item Menu..." << endl;
-            showItemManagementMenu(); 
+            showItemManagementMenu();
         }
         break;
     case 3:
         cout << "Type barcode and manufacturer >> ";
         cin >> barcode >> manufacturer;
-        if (itemManager.updateItem(barcode, manufacturer))
+        if (ItemManager.updateItem(barcode, manufacturer))
         {
             cout << "Updated Barcode: " << barcode;
         }
         else
         {
             cout << "Item not found. Returning to Item Menu..." << endl;
-            showItemManagementMenu(); 
+            showItemManagementMenu();
         }
         break;
     case 4:
         cout << "Type barcode >> ";
         cin >> barcode;
-        if (itemManager.deleteItem(barcode))
+        if (ItemManager.deleteItem(barcode))
         {
             cout << "Deleted Barcode: " << barcode;
         }
         else
         {
             cout << "Item not found. Returning to Item Menu..." << endl;
-            showItemManagementMenu(); 
+            showItemManagementMenu();
         }
         break;
     case 5:
