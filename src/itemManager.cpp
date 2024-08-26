@@ -106,18 +106,20 @@ void ItemManager::getAllItem()
     }
 }
 
-bool ItemManager::updateItem(const string &barcode, const std::string &newManufacturer)
+bool ItemManager::updateItem(const string &barcode, const std::string &newManufacturer, unsigned int newPrice)
 {
     Item *item = findItemByBarcode(barcode);
     if (item)
     {
         item->setItemManufacturer(newManufacturer);
+        item->setItemPrice(newPrice);
 
-        const char *sqlUpdate = "UPDATE Item SET manufacturer = ? WHERE barcode = ?;";
+        const char *sqlUpdate = "UPDATE Item SET manufacturer = ?, price = ? WHERE barcode = ?;";
         sqlite3_stmt *stmt;
         sqlite3_prepare_v2(db, sqlUpdate, -1, &stmt, 0);
         sqlite3_bind_text(stmt, 1, newManufacturer.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 2, barcode.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_int(stmt, 2, newPrice);
+        sqlite3_bind_text(stmt, 3, barcode.c_str(), -1, SQLITE_STATIC);
 
         sqlite3_step(stmt);
         sqlite3_finalize(stmt);

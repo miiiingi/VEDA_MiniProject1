@@ -20,7 +20,7 @@ public:
     Item *getItem(const std::string &barcode);
     void getAllItem();
     static int callback(void *NotUsed, int argc, char **argv, char **azColName);
-    bool updateItem(const std::string &barcode, const std::string &newManufacturer);
+    bool updateItem(const std::string &barcode, const std::string &newManufacturer, unsigned int newPrice);
     bool deleteItem(const std::string &barcode);
 
 private:

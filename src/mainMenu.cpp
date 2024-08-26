@@ -292,9 +292,9 @@ void MainMenu::handleItemManagementMenu(int choice)
         ItemManager.getAllItem();
         break;
     case 3:
-        cout << "Type barcode and manufacturer >> ";
-        cin >> barcode >> manufacturer;
-        if (ItemManager.updateItem(barcode, manufacturer))
+        cout << "Type barcode, manufacturer, price >> ";
+        cin >> barcode >> manufacturer >> price;
+        if (ItemManager.updateItem(barcode, manufacturer, price))
         {
             cout << "Updated Barcode: " << barcode;
         }
