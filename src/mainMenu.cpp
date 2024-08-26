@@ -288,19 +288,7 @@ void MainMenu::handleItemManagementMenu(int choice)
         }
         break;
     case 2:
-        cout << "Type barcode >> ";
-        cin >> barcode;
-        item = ItemManager.getItem(barcode);
-        if (item)
-        {
-            cout << "Barcode: " << item->getbarcodeNumber() << endl;
-            cout << "Manufacturer: " << item->getItemManufacturer();
-        }
-        else
-        {
-            cout << "Item not found. Returning to Item Menu..." << endl;
-            showItemManagementMenu();
-        }
+        ItemManager.getAllItem();
         break;
     case 3:
         cout << "Type barcode and manufacturer >> ";
