@@ -3,7 +3,7 @@
 #include "customer.h"
 
 TEST(CustomerManagerTest, InsertCustomer) {
-    CustomerManager manager;
+    CustomerManager manager(true);
 
     // 새로운 고객 추가
     manager.insertCustomer("Alice", "010-1234-5678");
@@ -16,7 +16,7 @@ TEST(CustomerManagerTest, InsertCustomer) {
 }
 
 TEST(CustomerManagerTest, SearchCustomer) {
-    CustomerManager manager;
+    CustomerManager manager(true);
     manager.insertCustomer("Bob", "010-9876-5432");
 
     // 존재하는 고객 검색
@@ -30,7 +30,7 @@ TEST(CustomerManagerTest, SearchCustomer) {
 }
 
 TEST(CustomerManagerTest, UpdateCustomer) {
-    CustomerManager manager;
+    CustomerManager manager(true);
     manager.insertCustomer("Charlie", "010-1111-2222");
 
     // 고객 정보 업데이트
@@ -45,7 +45,7 @@ TEST(CustomerManagerTest, UpdateCustomer) {
 }
 
 TEST(CustomerManagerTest, DeleteCustomer) {
-    CustomerManager manager;
+    CustomerManager manager(true);
     manager.insertCustomer("David", "010-5555-6666");
 
     // 고객 삭제

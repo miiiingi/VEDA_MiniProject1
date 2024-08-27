@@ -7,8 +7,9 @@
 
 using namespace std;
 
-CustomerManager::CustomerManager() : customerNumber(0), db(nullptr) {
-    int rc = sqlite3_open("customerdb.sqlite", &db);
+CustomerManager::CustomerManager(bool useInMemory) : customerNumber(0), db(nullptr), useInMemory(useInMemory) {
+    const char *dbPath = useInMemory ? ":memory:" : "itemdb.sqlite"; // 인메모리 또는 파일 DB 선택
+    int rc = sqlite3_open(dbPath, &db);
     if (rc) {
         std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
         return;
