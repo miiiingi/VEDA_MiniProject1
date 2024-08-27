@@ -14,7 +14,7 @@ class Customer;
 class CustomerManager{
 
 public:
-    CustomerManager();
+    CustomerManager(bool useInMemory = false);
     ~CustomerManager();
 
     void insertCustomer(const std::string&, const std::string&);
@@ -27,9 +27,10 @@ public:
     void deleteCustomer(const std::string& p_phone); 
 
 private:
-    std::unordered_map<std::string,std::unique_ptr<Customer>> CustomerMap;
-    unsigned int customerNumber;
     sqlite3* db;
+    std::unordered_map<std::string,std::unique_ptr<Customer>> CustomerMap;
+    bool useInMemory = false;
+    unsigned int customerNumber;
 
 };
 

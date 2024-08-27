@@ -8,7 +8,8 @@
 
 using namespace std;
 
-ItemManager::ItemManager()
+ItemManager::ItemManager(bool useInMemory)
+    : useInMemory(useInMemory) // 초기화 리스트에서 설정
 {
     connectToDatabase();
 }
@@ -23,16 +24,18 @@ ItemManager::~ItemManager()
 
 void ItemManager::connectToDatabase()
 {
-    int rc = sqlite3_open("itemdb.sqlite", &db);
+    const char *dbPath = useInMemory ? ":memory:" : "itemdb.sqlite"; // 인메모리 또는 파일 DB 선택
+    int rc = sqlite3_open(dbPath, &db);
     if (rc)
     {
-        cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+        std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
         return;
     }
 
     const char *sqlCreateTable =
         "CREATE TABLE IF NOT EXISTS Item ("
         "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "price INTEGER NOT NULL, "
         "barcode TEXT UNIQUE NOT NULL, "
         "manufacturer TEXT NOT NULL);";
 
@@ -45,19 +48,21 @@ void ItemManager::connectToDatabase()
     }
 }
 
-bool ItemManager::addItem(const string &barcode, const std::string &manufacturer)
+bool ItemManager::addItem(const string &barcode, const std::string &manufacturer, unsigned int price)
 {
     Item *item = findItemByBarcode(barcode);
+
     if (item)
     {
         return false;
     }
 
-    const char *sqlInsert = "INSERT INTO Item (barcode, manufacturer) VALUES (?, ?);";
+    const char *sqlInsert = "INSERT INTO Item (barcode, manufacturer, price) VALUES (?, ?, ?);";
     sqlite3_stmt *stmt;
     sqlite3_prepare_v2(db, sqlInsert, -1, &stmt, 0);
     sqlite3_bind_text(stmt, 1, barcode.c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 2, manufacturer.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 3, price);
 
     int rc = sqlite3_step(stmt);
     if (rc != SQLITE_DONE)
@@ -73,7 +78,7 @@ bool ItemManager::addItem(const string &barcode, const std::string &manufacturer
     unsigned int newId = sqlite3_last_insert_rowid(db);
 
     // ItemMap에 추가합니다.
-    ItemMap[barcode] = make_unique<Item>(newId, barcode, manufacturer);
+    ItemMap[barcode] = make_unique<Item>(newId, price, barcode, manufacturer);
 
     return true;
 }
@@ -83,18 +88,40 @@ Item *ItemManager::getItem(const string &barcode)
     return findItemByBarcode(barcode);
 }
 
-bool ItemManager::updateItem(const string &barcode, const std::string &newManufacturer)
+void ItemManager::getAllItem()
+{
+    // 이미 열린 데이터베이스 연결을 사용합니다.
+    const char *sql = "SELECT * FROM Item;";
+
+    // 콜백 함수 호출
+    char *zErrMsg = nullptr;
+    int rc = sqlite3_exec(db, sql, ItemManager::callback, nullptr, &zErrMsg);
+
+    if (rc != SQLITE_OK)
+    {
+        std::cerr << "SQL error: " << zErrMsg << std::endl;
+        sqlite3_free(zErrMsg);
+    }
+    else
+    {
+        std::cout << "All items retrieved successfully." << std::endl;
+    }
+}
+
+bool ItemManager::updateItem(const string &barcode, const std::string &newManufacturer, unsigned int newPrice)
 {
     Item *item = findItemByBarcode(barcode);
     if (item)
     {
         item->setItemManufacturer(newManufacturer);
+        item->setItemPrice(newPrice);
 
-        const char *sqlUpdate = "UPDATE Item SET manufacturer = ? WHERE barcode = ?;";
+        const char *sqlUpdate = "UPDATE Item SET manufacturer = ?, price = ? WHERE barcode = ?;";
         sqlite3_stmt *stmt;
         sqlite3_prepare_v2(db, sqlUpdate, -1, &stmt, 0);
         sqlite3_bind_text(stmt, 1, newManufacturer.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 2, barcode.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_int(stmt, 2, newPrice);
+        sqlite3_bind_text(stmt, 3, barcode.c_str(), -1, SQLITE_STATIC);
 
         sqlite3_step(stmt);
         sqlite3_finalize(stmt);
@@ -118,12 +145,13 @@ bool ItemManager::deleteItem(const string &barcode)
 
 void ItemManager::saveItemToDatabase(const Item &item)
 {
-    const char *sqlInsert = "INSERT INTO Item (id, barcode, manufacturer) VALUES (?, ?, ?);";
+    const char *sqlInsert = "INSERT INTO Item (id, barcode, manufacturer, price) VALUES (?, ?, ?, ?);";
     sqlite3_stmt *stmt;
     sqlite3_prepare_v2(db, sqlInsert, -1, &stmt, 0);
     sqlite3_bind_int(stmt, 1, item.getItemId());
     sqlite3_bind_text(stmt, 2, item.getbarcodeNumber().c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 3, item.getItemManufacturer().c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 4, item.getItemPrice());
 
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
@@ -148,7 +176,7 @@ Item *ItemManager::findItemByBarcode(const string &barcode)
         return it->second.get();
     }
 
-    const char *sqlSelect = "SELECT id, manufacturer FROM Item WHERE barcode = ?;";
+    const char *sqlSelect = "SELECT id, price, manufacturer FROM Item WHERE barcode = ?;";
     sqlite3_stmt *stmt;
     sqlite3_prepare_v2(db, sqlSelect, -1, &stmt, 0);
     sqlite3_bind_text(stmt, 1, barcode.c_str(), -1, SQLITE_STATIC);
@@ -156,12 +184,23 @@ Item *ItemManager::findItemByBarcode(const string &barcode)
     if (sqlite3_step(stmt) == SQLITE_ROW)
     {
         unsigned int id = sqlite3_column_int(stmt, 0);
-        string manufacturer = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
-        ItemMap[barcode] = make_unique<Item>(id, barcode, manufacturer);
+        unsigned int price = sqlite3_column_int(stmt, 1);
+        string manufacturer = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
+
+        ItemMap[barcode] = make_unique<Item>(id, price, barcode, manufacturer);
         sqlite3_finalize(stmt);
         return ItemMap[barcode].get();
     }
 
     sqlite3_finalize(stmt);
     return nullptr; // 해당 바코드의 상품이 없음
+}
+int ItemManager::callback(void *NotUsed, int argc, char **argv, char **azColName)
+{
+    for (int i = 0; i < argc; i++)
+    {
+        std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << "\t";
+    }
+    std::cout << std::endl;
+    return 0;
 }
