@@ -8,11 +8,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # SQLite3 라이브러리와의 연결을 위한 설정
 if(WIN32)
-    # Windows 환경에서만 SQLite3 경로 설정
+# Windows 환경에서만 SQLite3 경로 설정
     set(SQLite3_INCLUDE_DIR "C:/Users/snd03/Desktop/VEDA/02. VEDA_Class/02. 2week_C++/04. PATH")
     set(SQLite3_LIBRARY "C:/Users/snd03/Desktop/VEDA/02. VEDA_Class/02. 2week_C++/04. PATH/sqlite3.lib")
 else()
-    # Unix-like 시스템 (Linux, macOS 등)
+# Unix-like 시스템 (Linux, macOS 등)
     find_package(SQLite3 REQUIRED)
     set(SQLite3_INCLUDE_DIR ${SQLite3_INCLUDE_DIRS})
     set(SQLite3_LIBRARY ${SQLite3_LIBRARIES})
@@ -47,11 +47,16 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# 테스트 실행 파일 생성
-add_executable(RunTests test/test.cpp)
+set(SOURCES
+    src/customer.cpp
+    src/customerManager.cpp
+    src/item.cpp
+    src/itemManager.cpp
+)
 
-# GTest와 테스트 타겟 연결
-target_link_libraries(RunTests PRIVATE GTest::gtest_main)
+# 테스트 실행 파일 생성
+add_executable(RunTests test/itemManagerTest.cpp ${SOURCES})
+target_link_libraries(RunTests PRIVATE GTest::gtest_main ${SQLite3_LIBRARY})
 
 # 테스트 자동 검색 및 실행 설정
 enable_testing()
