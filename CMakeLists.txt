@@ -52,10 +52,12 @@ set(SOURCES
     src/customerManager.cpp
     src/item.cpp
     src/itemManager.cpp
+    test/itemManagerTest.cpp
+    test/customerManagerTest.cpp
 )
 
 # 테스트 실행 파일 생성
-add_executable(RunTests test/itemManagerTest.cpp ${SOURCES})
+add_executable(RunTests ${SOURCES})
 target_link_libraries(RunTests PRIVATE GTest::gtest_main ${SQLite3_LIBRARY})
 
 # 테스트 자동 검색 및 실행 설정
