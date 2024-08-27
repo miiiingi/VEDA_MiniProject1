@@ -8,7 +8,8 @@
 
 using namespace std;
 
-ItemManager::ItemManager()
+ItemManager::ItemManager(bool useInMemory)
+    : useInMemory(useInMemory) // 초기화 리스트에서 설정
 {
     connectToDatabase();
 }
@@ -23,10 +24,11 @@ ItemManager::~ItemManager()
 
 void ItemManager::connectToDatabase()
 {
-    int rc = sqlite3_open("itemdb.sqlite", &db);
+    const char *dbPath = useInMemory ? ":memory:" : "itemdb.sqlite"; // 인메모리 또는 파일 DB 선택
+    int rc = sqlite3_open(dbPath, &db);
     if (rc)
     {
-        cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+        std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
         return;
     }
 
