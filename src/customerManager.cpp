@@ -1,14 +1,15 @@
-
 #include "customerManager.h"
 #include "customer.h"
 #include <iostream>
 #include <unordered_map>
 #include <memory>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
 CustomerManager::CustomerManager(bool useInMemory) : customerNumber(0), db(nullptr), useInMemory(useInMemory) {
-    const char *dbPath = useInMemory ? ":memory:" : "itemdb.sqlite"; // 인메모리 또는 파일 DB 선택
+    const char *dbPath = useInMemory ? ":memory:" : "customerdb.sqlite"; // 인메모리 또는 파일 DB 선택
     int rc = sqlite3_open(dbPath, &db);
     if (rc) {
         std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
@@ -112,6 +113,58 @@ void CustomerManager::deleteCustomer(const std::string& p_phone) {
     }
 
     sqlite3_finalize(stmt);
+}
+
+void CustomerManager::saveToCSV(const std::string& filename) {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
+    file << "id,name,phone,point\n";  // CSV 헤더 작성
+    const char* sqlSelect = "SELECT id, name, phone, point FROM Customer;";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, sqlSelect, -1, &stmt, 0);
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        unsigned int id = sqlite3_column_int(stmt, 0);
+        std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        std::string phone = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        unsigned int point = sqlite3_column_int(stmt, 3);
+        // CSV 파일에 데이터 작성
+        file << id << "," << name << "," << phone << "," << point << "\n";
+    }
+    sqlite3_finalize(stmt);
+    file.close();
+}
+
+void CustomerManager::loadFromCSV(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
+
+    std::string line;
+    std::getline(file, line);  // CSV 파일의 첫 줄은 헤더이므로 건너뜀
+
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
+        std::string idStr, name, phone, pointStr;
+
+        std::getline(ss, idStr, ',');
+        std::getline(ss, name, ',');
+        std::getline(ss, phone, ',');
+        std::getline(ss, pointStr, ',');
+
+        unsigned int id = std::stoi(idStr);
+        unsigned int point = std::stoi(pointStr);
+
+        // 데이터베이스에 고객 정보 삽입
+        insertCustomer(name, phone);
+        updateCustomer(phone, name, phone, point);
+    }
+
+    file.close();
 }
 
 CustomerManager::~CustomerManager() {
