@@ -10,9 +10,6 @@ class Customer{
 public:
     Customer(const std::string&,const std::string&, unsigned int);
 
-    //void setCustomerId(const unsigned int);
-    //unsigned int getCustomerId() const;
-
     void setCustomerName(const std::string&);
     const std::string& getCustomerName() const ;
 

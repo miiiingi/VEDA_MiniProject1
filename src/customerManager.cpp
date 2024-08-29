@@ -1,10 +1,14 @@
 #include "customerManager.h"
 #include "customer.h"
+#include "itemManager.h"
+#include "item.h"
+
 #include <iostream>
 #include <unordered_map>
 #include <memory>
 #include <fstream>
 #include <sstream>
+
 
 using namespace std;
 
@@ -166,6 +170,32 @@ void CustomerManager::loadFromCSV(const std::string& filename) {
 
     file.close();
 }
+
+void CustomerManager::purchaseItem(const string& phone, const string& barcode, ItemManager& itemMgr){
+    //바코드로 item 검색해서 item 유니크포인터 참조자 획득 -> price 를 게터로 받아온다.
+    Item* targetItem(itemMgr.getItem(barcode));
+
+    //받아온 price 기반으로 가산해야 하는 포인트 계산
+    unsigned int targetPrice(targetItem->getItemPrice());
+
+    //업데이트 해줘야하는 고객을 get
+    unique_ptr<Customer>& targetCustomer(searchCustomer(phone));
+
+    
+    const char* sqlUpdatePoint = "UPDATE Customer SET point = ? WHERE phone = ?;";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, sqlUpdatePoint, -1, &stmt, 0);
+    sqlite3_bind_int(stmt,1,targetPrice*0.01+targetCustomer->getCustomerPoint());
+    sqlite3_bind_text(stmt, 2, phone.c_str(),-1,SQLITE_STATIC);  // 'point' 값 추가
+
+    //이후, map / sql 파일에 업데이트하고 종료
+    
+    if (sqlite3_step(stmt) == SQLITE_DONE) {
+	targetCustomer->setCustomerPoint(targetPrice*0.01+targetCustomer->getCustomerPoint());
+    } else {
+        std::cerr << "Failed to update customer: " << sqlite3_errmsg(db) << std::endl;
+    }
+}   
 
 CustomerManager::~CustomerManager() {
     if (db) {

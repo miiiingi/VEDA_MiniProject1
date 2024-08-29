@@ -11,6 +11,8 @@
 
 class Customer;
 
+
+class ItemManager;
 class CustomerManager{
 
 public:
@@ -27,6 +29,8 @@ public:
     void deleteCustomer(const std::string& p_phone); 
     void saveToCSV(const std::string& filename);
     void loadFromCSV(const std::string& filename);
+
+    void purchaseItem(const std::string& phone, const std::string& barcode, ItemManager& itemMgr);
 
 private:
     sqlite3* db;
