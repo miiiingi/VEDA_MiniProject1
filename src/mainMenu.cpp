@@ -158,7 +158,7 @@ void MainMenu::showCustomerManagementMenu()
         cout << "Enter your choice >> ";
         cin >> choice;
         handleCustomerManagementMenuChoice(choice);
-    } while (choice != 7); // 5. Back to Manager Menu ���� �� ����
+    } while (choice != 7); // 7. Back to Manager Menu
 }
 
 void MainMenu::handleCustomerManagementMenuChoice(int choice)
