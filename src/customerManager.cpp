@@ -42,6 +42,20 @@ int CustomerManager::isEmpty(){
 }
 
 void CustomerManager::insertCustomer(const string& p_name, const string& p_phone) {
+    // 중복 확인 쿼리
+    const char* sqlCheck = "SELECT COUNT(*) FROM Customer WHERE phone = ?;";
+    sqlite3_stmt* checkStmt;
+    sqlite3_prepare_v2(db, sqlCheck, -1, &checkStmt, 0);
+    sqlite3_bind_text(checkStmt, 1, p_phone.c_str(), -1, SQLITE_STATIC);
+
+    // 중복된 고객 존재 시
+    if (sqlite3_step(checkStmt) == SQLITE_ROW && sqlite3_column_int(checkStmt, 0) > 0) {
+        std::cerr << "Customer with phone number already exists: " << p_phone << std::endl;
+        sqlite3_finalize(checkStmt);
+        return;
+    }
+    sqlite3_finalize(checkStmt);
+
     const char* sqlInsert = "INSERT INTO Customer (name, phone) VALUES (?, ?);";
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db, sqlInsert, -1, &stmt, 0);
@@ -80,6 +94,22 @@ unique_ptr<Customer>& CustomerManager::searchCustomer(const string& p_phone){
 }
 
 void CustomerManager::updateCustomer(const std::string& p_phone, const std::string& new_name, const std::string& new_phone, unsigned int new_point) {
+
+    // 고객 존재 여부 확인 쿼리
+    const char* sqlCheck = "SELECT COUNT(*) FROM Customer WHERE phone = ?;";
+    sqlite3_stmt* checkStmt;
+    sqlite3_prepare_v2(db, sqlCheck, -1, &checkStmt, 0);
+    sqlite3_bind_text(checkStmt, 1, p_phone.c_str(), -1, SQLITE_STATIC);
+
+    // 고객이 존재하지 않는 경우
+    if (sqlite3_step(checkStmt) == SQLITE_ROW && sqlite3_column_int(checkStmt, 0) == 0) {
+        std::cerr << "Customer with phone number does not exist: " << p_phone << std::endl;
+        sqlite3_finalize(checkStmt);
+        return;
+    }
+    sqlite3_finalize(checkStmt);
+
+
     const char* sqlUpdate = "UPDATE Customer SET name = ?, phone = ?, point = ? WHERE phone = ?;";
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db, sqlUpdate, -1, &stmt, 0);
@@ -125,6 +155,7 @@ void CustomerManager::saveToCSV(const std::string& filename) {
         std::cerr << "Failed to open file: " << filename << std::endl;
         return;
     }
+
     file << "id,name,phone,point\n";  // CSV 헤더 작성
     const char* sqlSelect = "SELECT id, name, phone, point FROM Customer;";
     sqlite3_stmt* stmt;
@@ -155,17 +186,25 @@ void CustomerManager::loadFromCSV(const std::string& filename) {
         std::stringstream ss(line);
         std::string idStr, name, phone, pointStr;
 
-        std::getline(ss, idStr, ',');
-        std::getline(ss, name, ',');
-        std::getline(ss, phone, ',');
-        std::getline(ss, pointStr, ',');
+	if (!std::getline(ss, idStr, ',') ||
+	    !std::getline(ss, name, ',') ||
+	    !std::getline(ss, phone, ',') ||
+	    !std::getline(ss, pointStr, ',')) {
+            std::cerr << "Malformed CSV line: " << line << std::endl;
+	    continue; // 잘못된 형식의 라인을 건너뜀
+        }	
+	try{
+            unsigned int id = std::stoi(idStr);
+	    unsigned int point = std::stoi(pointStr);
 
-        unsigned int id = std::stoi(idStr);
-        unsigned int point = std::stoi(pointStr);
-
-        // 데이터베이스에 고객 정보 삽입
-        insertCustomer(name, phone);
-        updateCustomer(phone, name, phone, point);
+	    // 데이터베이스에 고객 정보 삽입
+            insertCustomer(name, phone);
+	    updateCustomer(phone, name, phone, point);
+	} catch (const std::invalid_argument& e) {
+	    std::cerr << "Conversion error: " << e.what() << " in line: " << line << std::endl;
+        } catch (const std::out_of_range& e) {
+	    std::cerr << "Out of range error: " << e.what() << " in line: " << line << std::endl;
+	}
     }
 
     file.close();
