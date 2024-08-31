@@ -288,11 +288,13 @@ void MainMenu::showItemManagementMenu()
         cout << "2. Get Item" << endl;
         cout << "3. Update Item" << endl;
         cout << "4. Delete Item" << endl;
-        cout << "5. Back to Main Menu" << endl;
+        cout << "5. Import Items from CSV" << endl;
+        cout << "6. Export Items to CSV" << endl;
+        cout << "7. Back to Main Menu" << endl;
         cout << "Enter your choice >> ";
         cin >> choice;
         handleItemManagementMenu(choice);
-    } while (choice != 5);
+    } while (choice != 7);
 }
 
 void MainMenu::handleItemManagementMenu(int choice)
@@ -345,6 +347,30 @@ void MainMenu::handleItemManagementMenu(int choice)
         }
         break;
     case 5:
+    {
+        char load_ans;
+        cout << "Warning : Your current customer data will be lost. Do you agree? [Y/n]  >>";
+        cin >> load_ans;
+        if (load_ans == 'Y' || load_ans == 'y')
+        {
+            cout << "Importing Customer List from CSV file to database " << endl;
+            ItemManager.loadFromCSV("itemList.csv");
+            break;
+        }
+        else
+        {
+            cout << "CSV Import aborted" << endl;
+            break;
+        }
+        break;
+    }
+    case 6:
+    {
+        cout << "Exporting Item List from database to CSV file " << endl;
+        ItemManager.saveToCSV("itemList.csv");
+        break;
+    }
+    case 7:
         break;
     default:
         cout << "Invalid choice. Please try again." << endl;
