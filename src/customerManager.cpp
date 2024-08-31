@@ -172,12 +172,43 @@ void CustomerManager::saveToCSV(const std::string& filename) {
     file.close();
 }
 
+
 void CustomerManager::loadFromCSV(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Failed to open file: " << filename << std::endl;
         return;
     }
+
+    // 데이터베이스 및 CustomerMap 초기화
+    // 테이블을 삭제하고 새로 생성하여 기존 데이터를 초기화
+    const char* sqlDropTable = "DROP TABLE IF EXISTS Customer;";
+    const char* sqlCreateTable =
+        "CREATE TABLE IF NOT EXISTS Customer ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "name TEXT NOT NULL, "
+        "phone TEXT UNIQUE NOT NULL, "
+        "point INTEGER DEFAULT 0);";
+
+    char* errMsg = nullptr;
+
+    // 테이블 삭제
+    if (sqlite3_exec(db, sqlDropTable, nullptr, nullptr, &errMsg) != SQLITE_OK) {
+        std::cerr << "Failed to drop table: " << errMsg << std::endl;
+        sqlite3_free(errMsg);
+        return;
+    }
+
+    // 테이블 재생성
+    if (sqlite3_exec(db, sqlCreateTable, nullptr, nullptr, &errMsg) != SQLITE_OK) {
+        std::cerr << "Failed to create table: " << errMsg << std::endl;
+        sqlite3_free(errMsg);
+        return;
+    }
+
+    // CustomerMap 초기화
+    CustomerMap.clear();
+    customerNumber = 0;
 
     std::string line;
     std::getline(file, line);  // CSV 파일의 첫 줄은 헤더이므로 건너뜀
@@ -186,25 +217,26 @@ void CustomerManager::loadFromCSV(const std::string& filename) {
         std::stringstream ss(line);
         std::string idStr, name, phone, pointStr;
 
-	if (!std::getline(ss, idStr, ',') ||
-	    !std::getline(ss, name, ',') ||
-	    !std::getline(ss, phone, ',') ||
-	    !std::getline(ss, pointStr, ',')) {
+        if (!std::getline(ss, idStr, ',') ||
+            !std::getline(ss, name, ',') ||
+            !std::getline(ss, phone, ',') ||
+            !std::getline(ss, pointStr, ',')) {
             std::cerr << "Malformed CSV line: " << line << std::endl;
-	    continue; // 잘못된 형식의 라인을 건너뜀
-        }	
-	try{
-            unsigned int id = std::stoi(idStr);
-	    unsigned int point = std::stoi(pointStr);
+            continue;  // 잘못된 형식의 라인을 건너뜀
+        }
 
-	    // 데이터베이스에 고객 정보 삽입
+        try {
+            unsigned int id = std::stoi(idStr);
+            unsigned int point = std::stoi(pointStr);
+
+            // 데이터베이스에 고객 정보 삽입
             insertCustomer(name, phone);
-	    updateCustomer(phone, name, phone, point);
-	} catch (const std::invalid_argument& e) {
-	    std::cerr << "Conversion error: " << e.what() << " in line: " << line << std::endl;
+            updateCustomer(phone, name, phone, point);
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Conversion error: " << e.what() << " in line: " << line << std::endl;
         } catch (const std::out_of_range& e) {
-	    std::cerr << "Out of range error: " << e.what() << " in line: " << line << std::endl;
-	}
+            std::cerr << "Out of range error: " << e.what() << " in line: " << line << std::endl;
+        }
     }
 
     file.close();
