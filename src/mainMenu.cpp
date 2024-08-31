@@ -152,11 +152,13 @@ void MainMenu::showCustomerManagementMenu()
         cout << "2. Search Customer" << endl;
         cout << "3. Update Customer" << endl;
         cout << "4. Delete Customer" << endl;
-        cout << "5. Back to Manager Menu" << endl;
+	cout << "5. Import Customers from CSV" << endl;
+	cout << "6. Export Customers to CSV" << endl;
+        cout << "7. Back to Manager Menu" << endl;
         cout << "Enter your choice >> ";
         cin >> choice;
         handleCustomerManagementMenuChoice(choice);
-    } while (choice != 5); // 5. Back to Manager Menu ���� �� ����
+    } while (choice != 7); // 7. Back to Manager Menu
 }
 
 void MainMenu::handleCustomerManagementMenuChoice(int choice)
@@ -243,6 +245,28 @@ void MainMenu::handleCustomerManagementMenuChoice(int choice)
         break;
     }
     case 5:
+    {
+	char load_ans;
+	cout<<"Warning : Your current customer data will be lost. Do you agree? [Y/n]  >>";
+	cin>>load_ans;
+	if(load_ans=='Y'||load_ans=='y'){
+	    cout<<"Importing Customer List from CSV file to database " << endl;
+	    customerManager.loadFromCSV("customerList.csv");
+	    break;
+	}else{
+	    cout<<"CSV Import aborted"<< endl;
+	    break;
+	}
+	break;
+    }
+    case 6:
+    {
+
+	cout<<"Exporting Customer List from database to CSV file " << endl;
+	customerManager.saveToCSV("customerList.csv");
+	break;
+    }
+    case 7:
         cout << "Returning to Manager Menu..." << endl;
         break;
     default:
