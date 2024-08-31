@@ -11,6 +11,8 @@
 
 class Customer;
 
+
+class ItemManager;
 class CustomerManager{
 
 public:
@@ -23,8 +25,12 @@ public:
     //using 'auto' to get a return from this function can be useful. 
     std::unique_ptr<Customer>& searchCustomer(const std::string&);
     
-    void updateCustomer(const std::string& p_phone, const std::string& new_name, const std::string& new_phone, const unsigned int);
+    void updateCustomer(const std::string& p_phone, const std::string& new_name, const std::string& new_phone, const unsigned int point);
     void deleteCustomer(const std::string& p_phone); 
+    void saveToCSV(const std::string& filename);
+    void loadFromCSV(const std::string& filename);
+
+    void purchaseItem(const std::string& phone, const std::string& barcode, ItemManager& itemMgr);
 
 private:
     sqlite3* db;
