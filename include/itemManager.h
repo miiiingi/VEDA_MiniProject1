@@ -7,6 +7,8 @@
 
 #include <memory>        // For std::unique_ptr
 #include <unordered_map> // For std::unordered_map
+#include <fstream>
+#include <sstream>
 
 class Item;
 
@@ -21,6 +23,8 @@ public:
     static int callback(void *NotUsed, int argc, char **argv, char **azColName);
     bool updateItem(const std::string &barcode, const std::string &newManufacturer, unsigned int newPrice);
     bool deleteItem(const std::string &barcode);
+    void loadFromCSV(const std::string& filename);
+    void saveToCSV(const std::string &filename);
     void getAllItem();
 
 private:
