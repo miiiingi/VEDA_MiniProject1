@@ -109,7 +109,7 @@ void MainMenu::showCustomerMenu()
     do
     {
         // cout << "\033[2J\033[1;1H";
-        cout << "\033[2J\033[1;1H";
+        // cout << "\033[2J\033[1;1H";
         cout << "=====================|Customer Menu|========================\n";
         cout << "                      1. View Items                         \n";
         cout << "                      2. Purchase Items                     \n";
