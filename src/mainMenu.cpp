@@ -97,11 +97,15 @@ bool MainMenu::loginCustomer()
     {
         cout << "\nLogin successful. Welcome, " << customer->getCustomerName() << "!" << endl;
         currentCustomer = customer.get();
+        cout << "Press the Enter key ...";
+        cin.get();  
         return true;
     }
     else
     {
-        cout << "\nLogin failed. Customer not found." << endl;
+        cout << "\n\033[1;31mLogin failed. Customer not found.\033[0m" << endl;
+        cout << "Press the Enter key ..." << endl;
+        cin.get();  
         return false;
     }
 }
@@ -132,12 +136,20 @@ void MainMenu::handleCustomerMenuChoice(int choice)
     {
     case 1:
         ItemManager.getAllItem();
+        cout << "Press the Enter key ...";
+        cin.ignore();
+        cin.get(); 
+        cout << "\033[2J\033[1;1H";
         break;
     case 2:
     {
         if (!currentCustomer)
         {
             cout << "\nNo customer is logged in. Please log in first." << endl;
+            cout << "Press the Enter key ...";
+            cin.ignore();
+            cin.get();
+            cout << "\033[2J\033[1;1H";   
             break;
         }
 
@@ -149,16 +161,28 @@ void MainMenu::handleCustomerMenuChoice(int choice)
         customerManager.purchaseItem(currentCustomer->getCustomerPhoneNumber(), barcode, ItemManager);
 
         cout << "\nPurchase successful. Points updated." << endl;
+        cout << "Press the Enter key ...";
+        cin.ignore();
+        cin.get();  
+        cout << "\033[2J\033[1;1H";
         break;
     }
     case 3:
         if (currentCustomer)
         {
             cout << "\n|Your current points| " << currentCustomer->getCustomerPoint() << endl;
+            cout << "Press the Enter key ...";
+            cin.ignore();
+            cin.get();  
+            cout << "\033[2J\033[1;1H";
         }
         else
         {
             cout << "\nNo customer is logged in." << endl;
+            cout << "Press the Enter key ...";
+            cin.ignore();
+            cin.get(); 
+            cout << "\033[2J\033[1;1H";
         }
         break;
     case 4:
@@ -244,7 +268,11 @@ void MainMenu::handleCustomerManagementMenuChoice(int choice)
         cin >> name >> phone;
 
         customerManager.insertCustomer(name, phone);
-        cout << "\nSuccessfully added customer information" << endl;
+        cout << "\nSuccessfully added customer information\n" << endl;
+        cout << "Press the Enter key ...";
+        cin.ignore(); 
+        cin.get(); 
+        cout << "\033[2J\033[1;1H";   
         break;
     }
     case 2:
@@ -266,8 +294,12 @@ void MainMenu::handleCustomerManagementMenuChoice(int choice)
         }
         else
         {
-            cout << "\nCustomer not found ..." << endl;
+            cout << "\nCustomer not found ...\n" << endl;
         }
+        cout << "Press the Enter key ...";
+        cin.ignore();
+        cin.get(); 
+        cout << "\033[2J\033[1;1H";   
         break;
     }
     case 3:
@@ -288,13 +320,17 @@ void MainMenu::handleCustomerManagementMenuChoice(int choice)
 
         if (customer)
         {
-            cout << "\nCustomer Update Successful" << endl;
+            cout << "\nCustomer Update Successful\n" << endl;
             customerManager.updateCustomer(phone, name, n_phone, point);
         }
         else
         {
             cout << "\nCustomer not found ..." << endl;
         }
+        cout << "Press the Enter key ...";
+        cin.ignore();
+        cin.get(); 
+        cout << "\033[2J\033[1;1H";   
         break;
     }
     case 4:
@@ -316,6 +352,10 @@ void MainMenu::handleCustomerManagementMenuChoice(int choice)
         {
             cout << "\nCustomer not found ..." << endl;
         }
+        cout << "Press the Enter key ...";
+        cin.ignore();
+        cin.get(); 
+        cout << "\033[2J\033[1;1H";   
         break;
     }
     case 5:
@@ -327,19 +367,31 @@ void MainMenu::handleCustomerManagementMenuChoice(int choice)
         {
             cout<< "\nImporting Customer List from CSV file to database " << endl;
             customerManager.loadFromCSV("customerList.csv");
+            cout << "Press the Enter key ...";
+            cin.ignore();
+            cin.get(); 
+            cout << "\033[2J\033[1;1H";   
             break;
         }
         else
         {
             cout<<"\nCSV Import aborted"<< endl;
+            cout << "Press the Enter key ...";
+            cin.ignore();
+            cin.get(); 
+            cout << "\033[2J\033[1;1H";   
             break;
         }
-	break;
+	    break;
     }
     case 6:
     {
         cout << "\nExporting Customer List from database to CSV file " << endl;
         customerManager.saveToCSV("customerList.csv");
+        cout << "Press the Enter key ...";
+        cin.ignore();
+        cin.get(); 
+        cout << "\033[2J\033[1;1H";   
         break;
     }
     case 7:
@@ -391,12 +443,23 @@ void MainMenu::handleItemManagementMenu(int choice)
         else
         {
             cout << "\nItem not found. Returning to Item Menu..." << endl;
+            cout << "Press the Enter key ...";
+            cin.ignore();
+            cin.get(); 
             showItemManagementMenu();
         }
+        cout << "Press the Enter key ...";
+        cin.ignore();
+        cin.get(); 
+        cout << "\033[2J\033[1;1H";   
         break;
     case 2:
         cout << "\n\n\033[1;32m<< Get Item >>\033[0m" << endl;
         ItemManager.getAllItem();
+        cout << "Press the Enter key ...";
+        cin.ignore();
+        cin.get(); 
+        cout << "\033[2J\033[1;1H";   
         break;
     case 3:
         cout << "\n\n\033[1;32m<< Update Item >>\033[0m" << endl;
@@ -410,6 +473,10 @@ void MainMenu::handleItemManagementMenu(int choice)
             cout << "\nItem not found. Returning to Item Menu..." << endl;
             showItemManagementMenu();
         }
+        cout << "Press the Enter key ...";
+        cin.ignore();
+        cin.get(); 
+        cout << "\033[2J\033[1;1H";   
         break;
     case 4:
         cout << "\n\n\033[1;32m<< Delete Item >>\033[0m" << endl;
@@ -424,6 +491,10 @@ void MainMenu::handleItemManagementMenu(int choice)
             cout << "\nItem not found. Returning to Item Menu..." << endl;
             showItemManagementMenu();
         }
+        cout << "Press the Enter key ...";
+        cin.ignore();
+        cin.get(); 
+        cout << "\033[2J\033[1;1H";   
         break;
     case 5:
     {
@@ -434,11 +505,19 @@ void MainMenu::handleItemManagementMenu(int choice)
         {
             cout << "\nImporting Customer List from CSV file to database " << endl;
             ItemManager.loadFromCSV("itemList.csv");
+            cout << "Press the Enter key ...";
+            cin.ignore();
+            cin.get(); 
+            cout << "\033[2J\033[1;1H";   
             break;
         }
         else
         {
             cout << "\nCSV Import aborted" << endl;
+            cout << "Press the Enter key ...";
+            cin.ignore();
+            cin.get(); 
+            cout << "\033[2J\033[1;1H";   
             break;
         }
         break;
@@ -447,6 +526,10 @@ void MainMenu::handleItemManagementMenu(int choice)
     {
         cout << "\nExporting Item List from database to CSV file " << endl;
         ItemManager.saveToCSV("itemList.csv");
+        cout << "Press the Enter key ...";
+        cin.ignore();
+        cin.get(); 
+        cout << "\033[2J\033[1;1H";   
         break;
     }
     case 7:
