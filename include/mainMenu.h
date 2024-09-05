@@ -15,11 +15,14 @@ private:
     void showItemManagementMenu(); 
     void showCustomerManagementMenu(); 
     bool loginCustomer(); 
+
     void handleMainMenuChoice(int choice);
     void handleCustomerMenuChoice(int choice);
     void handleManagerMenuChoice(int choice);
     void handleCustomerManagementMenuChoice(int choice);
     void handleItemManagementMenu(int choice);
+
+    int getUserInput();
 
     CustomerManager customerManager; 
     Customer* currentCustomer = nullptr; 
