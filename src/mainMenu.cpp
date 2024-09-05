@@ -245,7 +245,7 @@ void MainMenu::showCustomerManagementMenu()
         cout << "                  3. Update Customer                       \n";
         cout << "                  4. Delete Customer                       \n";
         cout << "                  5. Import Customer from CSV              \n";
-        cout << "                  6. Export Customer from CSV              \n";
+        cout << "                  6. Export Customer to CSV              \n";
         cout << "                  7. Back to Manager Menu                  \n";
         cout << "=================|Customer Manager Menu|===================\n";
         cout << "\033[34m                 Enter your choice (1 ~ 7) >> \033[0m";
